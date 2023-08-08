@@ -1,0 +1,67 @@
+
+
+
+
+
+
+<div class="container">
+    <h4>Option 1</h4>
+    <div class="form-inline">
+        <input class="form-control mr-1">
+        <button class="btn btn-primary">enter</button>
+    </div>
+</div>
+
+ <fieldset class="form-group row">
+      <legend class="col-form-legend col-sm-2">Radios</legend>
+      <div class="col-sm-10">
+        <div class="form-check">
+          <label class="form-check-label">
+            <input class="form-check-input radio-inline" type="radio" name="gridRadios" id="gridRadios1" value="option1" checked>
+            Option one</label>
+            <label class="form-check-label">
+            <input class="form-check-input radio-inline" type="radio" name="gridRadios" id="gridRadios2" value="option2">
+            Option two</label>
+            <label class="form-check-label disabled">
+            <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios3" value="option3" disabled>
+            Option three</label>
+        </div>
+        
+    </fieldset>
+
+
+var changevalue = $("input:radio[name='HIPPASentOut']:checked").val();  
+
+
+
+https://stackoverflow.com/questions/49797169/multiple-radio-buttons-on-one-line-bootstrap-4
+
+
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+<div class="form-check form-check-inline">
+  <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+  <label class="form-check-label" for="inlineRadio1">Option one</label>
+</div>
+<div class="form-check form-check-inline">
+  <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+  <label class="form-check-label" for="inlineRadio2">Option Two</label>
+</div>
+<div class="form-check form-check-inline">
+  <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="option3">
+  <label class="form-check-label" for="inlineRadio3">Option tree</label>
+</div>
+<div class="form-check form-check-inline">
+  <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="option3" disabled>
+  <label class="form-check-label" for="inlineRadio3">Option four (disabled)</label>
+</div>
+
+
+
+
+
+
+
+
+
