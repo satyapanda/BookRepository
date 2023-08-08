@@ -1,0 +1,910 @@
+﻿@page
+@model Treatment.Pages.Hospitals.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+<h4>Edit Hospital</h4>
+<hr />
+
+<div class="container">
+    <form id="HospitalEditForm" enctype="multipart/form-data" method="post">
+
+        <div class="form-row">
+            <div class="col-12">
+                <label class="col-form-label" for="ContactErrorMsg" id="ContactErrorMsg"></label>
+            </div>
+        </div>
+        <fieldset class="border p-2">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="Hospital.HospitalName" class="col-form-label">Hospital Name</label>
+                    <input asp-for="Hospital.HospitalName" class="form-control" id="HospitalName" placeholder="Hospital Name">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="Hospital.Address" class="col-form-label">Address</label>
+                    <input type="text" asp-for="Hospital.Address" class="form-control" id="Address" name="Address" placeholder="Address">
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="Hospital.Suite" class="col-form-label">Suite</label>
+                    <input type="text" asp-for="Hospital.Suite" class="form-control" id="Suite" name="Suite" placeholder="Suite">
+                </div>
+            </div>
+
+            <div class="form-row">
+
+                <div class="form-group col-md-4">
+                    <label asp-for="StateName" class="col-form-label">State</label>
+                    <input asp-for="StateName" type="text" id="Statename" name="Statename" class="form-control" placeholder="Autocomplete Enabled" id="Autocomplete Enabled">
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label asp-for="Hospital.City" class="col-form-label">City</label>
+                    <input type="text" asp-for="Hospital.City" class="form-control" id="City" name="City" placeholder="Autocomplete Enabled">
+                </div>
+                <div class="form-group col-md-4">
+                    <label asp-for="Hospital.ZipCode" class="col-form-label">Zip Code</label>
+                    <input asp-for="Hospital.ZipCode" type="text" class="form-control" id="ZipCode" name="ZipCode" placeholder="Autocomplete Enabled(Based on State)">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label asp-for="Hospital.Phone" class="col-form-label">Phone</label>
+                    <input asp-for="Hospital.Phone" type="tel" required class="form-control" id="Phone" name="Phone" placeholder="format: (xxx)-xxx-xxxx">
+                </div>
+                <div class="form-group col-md-4">
+                    <label asp-for="Hospital.Email" class="col-form-label">Email</label>
+                    <input asp-for="Hospital.Email" type="email" class="form-control" id="Email" name="Email" placeholder="Please provide a valid email">
+                </div>
+                <div class="form-group col-md-4">
+                    <label asp-for="Hospital.WebSite" class="col-form-label">WebSite</label>
+                    <input asp-for="Hospital.WebSite" type="url" class="form-control" id="WebSite" name="WebSite" pattern="https?://.+" placeholder="Please start with http:// or https://">
+                </div>
+            </div>
+
+            <div class="form-row">
+
+                <div class="form-group col-md-6">
+                    <label class="col-form-label">Download Excel Template for CPTCode Pricing</label>
+                    <button asp-page-handler="Export" class="btn btn-primary" style="height:30px">Excel Download</button>
+                </div>
+
+            </div>
+
+            <div class="form-row">
+                <div class="col-md-4">
+                    <input type="file" id="fUpload" name="files" class="form-control" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+                </div>
+                <div class="col-md-2">
+                    <input type="button" id="btnUpload" value="Upload" class="btn btn-primary" />
+                </div>
+
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-primary" id="ViewCpt" data-toggle="modal" data-target="#myModal">View CPT</button>
+                </div>
+            </div>
+        </fieldset>
+        <br />
+        <br />
+        <input asp-for="Hospital.HospitalId" type="hidden" id="HospitalId" />
+        <input asp-for="StateCode" type="hidden" id="StateCode" />
+
+        <!-- Modal Start-->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog DatatableModal" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="exampleModalLabel"><strong>Hospital CPT Codes</strong></h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <table id="myTable" class="table table-striped table-bordered table-hover responsive"></table>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal End -->
+
+
+
+        <div class="form-row">
+            <div class="col-12">
+                <button class="btn btn-primary  btn-add-panel float-right" id="ShowButton" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                    Show Info
+                </button>
+            </div>
+        </div>
+
+        <fieldset class="border p-2">
+            <legend class="w-auto">Contact Info</legend>
+            <div class="collapse" id="collapseExample">
+                <div class="row col-12">
+                    <div class="col-sm-6">
+                        <button class="btn btn-primary  btn-add-panel float-left" type="button" id="AddInfoButton">
+                            <i class="fa fa-plus-circle" style="font-size:20px"></i> Add Info
+                        </button>
+                    </div>
+                    <div class="col-sm-6">
+                        <button class="btn btn-primary  btn-add-panel float-right" type="button" id="RemoveInfoButton">
+                            <i class="fa fa-minus-circle" style="font-size:20px"></i> Remove Info
+                        </button>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="accordion" id="accordionExample"></div>
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="form-row">
+            <div class="col-1">
+                <button type="button" class="btn btn-primary mt-2" id="SubmitHospital">Submit</button>
+            </div>
+            <div class="col-1">
+                <button type="button" class="btn btn-primary mt-2" id="ClearSubmitHospital">Clear Form </button>
+            </div>
+            <div class="col-2 ml-4 mt-2">
+                <div class="form-group">
+                    <a asp-page="Index" class="btn btn-primary">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+
+    var GlobalContactInfoArray = [];
+    var contactinfonum = 0;
+    var FacilitycontactinfoId;
+
+
+    $(document).ready(function ()
+        {
+
+        $("#ContactErrorMsg").hide();
+
+        $("#ShowButton").on('click', function () {
+            //debugger;
+
+            if (GlobalContactInfoArray.length <= 0)
+               {               
+                $("#ContactErrorMsg").text('');
+                
+                let HospitalId = $("#HospitalId").val();
+                let cardhead = "cardheading" + contactinfonum.toString();
+                let cardbody = "cardbody" + contactinfonum.toString();
+
+                $.ajax({
+                    url: '/Hospitals/Edit?handler=ContactInfosBasedOnHospitalId',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: JSON.stringify({ hospitalId: HospitalId }),
+                    contentType: "application/json; charset=utf-8",
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                    success: function (d) {
+                        $.each(d, function (i, ContactInfo) {
+                             cardhead = "cardheading" + contactinfonum.toString();
+                             cardbody = "cardbody" + contactinfonum.toString();
+                            if (d.length > 0)
+                            {
+                                InfoBit = true; // used to control the Control flow in AddInfoButton Function
+
+                                let Admindynamicval = "<scr" + "ipt>" + "  $(document).ready(function(){$('#Adminphoneid" + contactinfonum.toString() + "').mask('(000) 000-0000');});" + "</scr" + "ipt>";
+                                let Schedulardynamicval = "<scr" + "ipt>" + "  $(document).ready(function(){$('#Schedularphoneid" + contactinfonum.toString() + "').mask('(000) 000-0000');});" + "</scr" + "ipt>";
+                                let Billingdynamicval = "<scr" + "ipt>" + "  $(document).ready(function(){$('#Billingphoneid" + contactinfonum.toString() + "').mask('(000) 000-0000');});" + "</scr" + "ipt>";
+
+                                    var contactinfo = "<div class='card' id='carddiv" + contactinfonum.toString() + "'><div class='card-header' id=' " + cardhead + "'><h2 class='mb-0'>" +
+
+                                    "<button class='btn btn-link' type='button' data-toggle='collapse' data-target='#" + cardbody + "' aria-expanded='true' aria-controls='" + cardbody + "'>Contact Info #" + (contactinfonum + 1).toString() +
+                                    "</button></h2></div><div id=" + cardbody + " class='collapse show' aria-labelledby=" + cardhead + " data-parent='#accordionExample'><div class='card-body'> " +
+
+
+                                    "<div class='form-row'><div class='form-group col-md-4'><label for='Administratorid" + contactinfonum.toString() + "'  class='col-form-label'>Administrator Name</label>" +
+                                    "<input type='text' class='form-control' id='Administratorid" + contactinfonum.toString() + "' placeholder='Administrator Name'>" +
+                                    "</div><div class='form-group col-md-4'><label for='Adminemailid" + contactinfonum.toString() + "' class='col-form-label'>Administrator Email</label>" +
+                                    "<input type='text' class='form-control' id='Adminemailid" + contactinfonum.toString() + "' placeholder='Administrator Email'>" +
+                                    "</div><div class='form-group col-md-4'><label for='Adminphoneid" + contactinfonum.toString() + "' class='col-form-label'>Administrator Phone</label>" +
+                                    "<input type='text' class='form-control' id='Adminphoneid" + contactinfonum.toString() + "' placeholder='Administrator Phone'></div></div>" +
+                                    "<div class='form-row'><div class='form-group col-md-4'><label for='Schedularid" + contactinfonum.toString() + "' class='col-form-label'>Schedular Name</label>" +
+                                    "<input type='text' class='form-control' id='Schedularid" + contactinfonum.toString() + "' placeholder='Schedular Name'></div><div class='form-group col-md-4'>" +
+                                    "<label for='Schedularemailid" + contactinfonum.toString() + "' class='col-form-label'>Schedular Email</label><input type='text' class='form-control' id='Schedularemailid" + contactinfonum.toString() + "' placeholder='Schedular Email'>" +
+                                    "</div><div class='form-group col-md-4'><label for='Schedularphoneid' class='col-form-label'>Schedular Phone</label><input type='text' class='form-control' id='Schedularphoneid" + contactinfonum.toString() + "' placeholder='Schedular Phone'>" +
+                                    "</div></div><div class='form-row'><div class='form-group col-md-4'><label for='Billingid" + contactinfonum.toString() + "' class='col-form-label'>Billing</label>" +
+                                    "<input type='text' class='form-control' id='Billingid" + contactinfonum.toString() + "' placeholder='Billing Name'></div><div class='form-group col-md-4'>" +
+                                    "<label for='Billingemailid" + contactinfonum.toString() + "' class='col-form-label'>Billing Email</label><input type='text' class='form-control' id='Billingemailid" + contactinfonum.toString() + "' placeholder='Billing Email'>" +
+                                    "</div><div class='form-group col-md-4'><label for='Billingphoneid" + contactinfonum.toString() + "' class='col-form-label'>Billing Phone</label><input type='text' class='form-control' id='Billingphoneid" + contactinfonum.toString() + "' placeholder='Billing Phone'>" +
+                                    "</div></div><div class='form-row'><div class='form-group col-md-12'><label for='Receptionistid" + contactinfonum.toString() + "' class='col-form-label'>Receptionist Name: </label><input type='text' class='form-control' id='Receptionistid" + contactinfonum.toString() + "' placeholder='Receptionist Name'>" +
+                                    "</div></div><div class='form-row'><div class='form-group col-md-12'><label for='Staffid" + contactinfonum.toString() + "' class='col-form-label'>Add Staff: </label>" +
+                                    "<input type='text' class='form-control' id='Staffid" + contactinfonum.toString() + "' placeholder='Add Staff'>" +
+                                    "</div></div></div></div>" + Admindynamicval + Schedulardynamicval + Billingdynamicval +"</div>";
+
+                                $('#accordionExample').append(contactinfo);
+
+                                GlobalContactInfoArray.push(ContactInfo);
+
+                                $("#Administratorid" + contactinfonum.toString()).val(ContactInfo.adminName);
+                                $("#Adminemailid" + contactinfonum.toString()).val(ContactInfo.adminEmail);
+                                $("#Adminphoneid" + contactinfonum.toString()).val(ContactInfo.adminPhone);
+                                $("#Schedularid" + contactinfonum.toString()).val(ContactInfo.schedular);
+                                $("#Schedularphoneid" + contactinfonum.toString()).val(ContactInfo.schedularPhone);
+                                $("#Schedularemailid" + contactinfonum.toString()).val(ContactInfo.schedularEmail);
+                                $("#Billingid" + contactinfonum.toString()).val(ContactInfo.billing);
+                                $("#Billingphoneid" + contactinfonum.toString()).val(ContactInfo.billingPhone);
+                                $("#Billingemailid" + contactinfonum.toString()).val(ContactInfo.billingEmail);
+
+                                contactinfonum = contactinfonum + 1;
+                            //console.log(JSON.stringify(ContactInfo));
+
+                            }
+                            
+                        });
+                    },
+                    error: function () {
+                        alert('Error!');
+                    }
+                });
+
+            } //end of if            
+            
+        });
+
+        $('#AddInfoButton').on('click', function () {
+
+            //debugger;
+            var cardhead = "cardheading" + contactinfonum.toString();
+            var cardbody = "cardbody" + contactinfonum.toString();
+            var previousnum = contactinfonum - 1;
+
+            if (GlobalContactInfoArray.length == 1 && InfoBit == false) { InfoBit = true; }
+
+
+            if (GlobalContactInfoArray.length > 0 && InfoBit == true) {
+
+                let previousObject = GlobalContactInfoArray[previousnum];
+                previousObject.hospitalId = $('#HospitalId').val(); //Comes from DB on initial page load
+                previousObject.adminName = $('#Administratorid' + previousnum.toString()).val();
+                previousObject.adminEmail = $('#Adminemailid' + previousnum.toString()).val();
+                previousObject.adminPhone = $('#Adminphoneid' + previousnum.toString()).val();
+                previousObject.schedular = $('#Schedularid' + previousnum.toString()).val();
+                previousObject.schedularEmail = $('#Schedularemailid' + previousnum.toString()).val();
+                previousObject.schedularPhone = $('#Schedularphoneid' + previousnum.toString()).val();
+                previousObject.billing = $('#Billingid' + previousnum.toString()).val();
+                previousObject.billingEmail = $('#Billingemailid' + previousnum.toString()).val();
+                previousObject.billingPhone = $('#Billingphoneid' + previousnum.toString()).val();
+                previousObject.receptionistid = $('#Receptionistid' + previousnum.toString()).val();
+                previousObject.staffid = $('#Staffid' + previousnum.toString()).val();
+
+            } else {
+
+                let ContactObject = new Object();
+                ContactObject.hospitalContactInfoID = 0;
+                ContactObject.hospitalId = $('#HospitalId').val(); //Comes from DB on initial page load
+                ContactObject.adminName = '';
+                ContactObject.adminEmail = '';
+                ContactObject.adminPhone = '';
+                ContactObject.schedular = '';
+                ContactObject.schedularEmail = '';
+                ContactObject.schedularPhone = '';
+                ContactObject.billing = '';
+                ContactObject.billingEmail = '';
+                ContactObject.billingPhone = '';
+                ContactObject.receptionistid = '';
+                ContactObject.staffid = '';
+                GlobalContactInfoArray.push(ContactObject);
+
+
+                let Admindynamicval = "<scr" + "ipt>" + "  $(document).ready(function(){$('#Adminphoneid" + contactinfonum.toString() + "').mask('(000) 000-0000');});" + "</scr" + "ipt>";
+                let Schedulardynamicval = "<scr" + "ipt>" + "  $(document).ready(function(){$('#Schedularphoneid" + contactinfonum.toString() + "').mask('(000) 000-0000');});" + "</scr" + "ipt>";
+                let Billingdynamicval = "<scr" + "ipt>" + "  $(document).ready(function(){$('#Billingphoneid" + contactinfonum.toString() + "').mask('(000) 000-0000');});" + "</scr" + "ipt>";
+
+
+                var contactinfo = "<div class='card' id='carddiv" + contactinfonum.toString() + "'><div class='card-header' id='" + cardhead + "'><h2 class='mb-0'>" +
+
+                    "<button class='btn btn-link' type='button' data-toggle='collapse' data-target='#" + cardbody + "' aria-expanded='true' aria-controls='" + cardbody + "'>Contact Info #" + (contactinfonum + 1).toString() +
+                    "</button></h2></div><div id=" + cardbody + " class='collapse show' aria-labelledby=" + cardhead + " data-parent='#accordionExample'><div class='card-body'> " +
+
+
+                    "<div class='form-row'><div class='form-group col-md-4'><label for='Administratorid" + contactinfonum.toString() + "'  class='col-form-label'>Administrator Name</label>" +
+                    "<input type='text' class='form-control' id='Administratorid" + contactinfonum.toString() + "' placeholder='Administrator Name'>" +
+                    "</div><div class='form-group col-md-4'><label for='Adminemailid" + contactinfonum.toString() + "' class='col-form-label'>Administrator Email</label>" +
+                    "<input type='email' class='form-control' id='Adminemailid" + contactinfonum.toString() + "' placeholder='Administrator Email'>" +
+                    "</div><div class='form-group col-md-4'><label for='Adminphoneid" + contactinfonum.toString() + "' class='col-form-label'>Administrator Phone</label>" +
+                    "<input type='text' class='form-control' id='Adminphoneid" + contactinfonum.toString() + "' placeholder='Administrator Phone'></div></div>" +
+                    "<div class='form-row'><div class='form-group col-md-4'><label for='Schedularid" + contactinfonum.toString() + "' class='col-form-label'>Schedular Name</label>" +
+                    "<input type='text' class='form-control' id='Schedularid" + contactinfonum.toString() + "' placeholder='Schedular Name'></div><div class='form-group col-md-4'>" +
+                    "<label for='Schedularemailid" + contactinfonum.toString() + "' class='col-form-label'>Schedular Email</label><input type='email' class='form-control' id='Schedularemailid" + contactinfonum.toString() + "' placeholder='Schedular Email'>" +
+                    "</div><div class='form-group col-md-4'><label for='Schedularphoneid' class='col-form-label'>Schedular Phone</label><input type='text' class='form-control' id='Schedularphoneid" + contactinfonum.toString() + "' placeholder='Schedular Phone'>" +
+                    "</div></div><div class='form-row'><div class='form-group col-md-4'><label for='Billingid" + contactinfonum.toString() + "' class='col-form-label'>Billing</label>" +
+                    "<input type='text' class='form-control' id='Billingid" + contactinfonum.toString() + "' placeholder='Billing Name'></div><div class='form-group col-md-4'>" +
+                    "<label for='Billingemailid" + contactinfonum.toString() + "' class='col-form-label'>Billing Email</label><input type='email' class='form-control' id='Billingemailid" + contactinfonum.toString() + "' placeholder='Billing Email'>" +
+                    "</div><div class='form-group col-md-4'><label for='Billingphoneid" + contactinfonum.toString() + "' class='col-form-label'>Billing Phone</label><input type='text' class='form-control' id='Billingphoneid" + contactinfonum.toString() + "' placeholder='Billing Phone'>" +
+                    "</div></div><div class='form-row'><div class='form-group col-md-12'><label for='Receptionistid" + contactinfonum.toString() + "' class='col-form-label'>Receptionist Name: </label><input type='text' class='form-control' id='Receptionistid" + contactinfonum.toString() + "' placeholder='Receptionist Name'>" +
+                    "</div></div><div class='form-row'><div class='form-group col-md-12'><label for='Staffid" + contactinfonum.toString() + "' class='col-form-label'>Add Staff: </label>" +
+                    "<input type='text' class='form-control' id='Staffid" + contactinfonum.toString() + "' placeholder='Add Staff'>" +
+                    "</div></div></div></div>"+ Admindynamicval + Schedulardynamicval + Billingdynamicval +" </div>";
+
+                $('#accordionExample').append(contactinfo);
+
+                contactinfonum = contactinfonum + 1;
+            }
+
+
+            if (GlobalContactInfoArray.length > 0) {
+
+                if (GlobalContactInfoArray.length == 1) {
+                    var previousObject = GlobalContactInfoArray[0];
+
+                } else {
+                    var previousObject = GlobalContactInfoArray[previousnum];
+
+                }
+
+
+                if (previousObject.adminName == '' || previousObject.adminEmail == '' || previousObject.adminPhone == '') {
+
+                    //var labeltest = $("label[for='ContactErrorMsg']");
+                    if (previousnum != -1) {
+                        $("#ContactErrorMsg").text("Please fill the Admin row values in Contact Info");
+                        $("#ContactErrorMsg").css({ "color": "Red" });
+                        $("#ContactErrorMsg").show();
+                    }
+                    return false;
+                }
+
+
+                if (previousObject.schedular == '' || previousObject.schedularEmail == '' || previousObject.schedularPhone == '') {
+                    if (previousnum != -1) {
+                        $('#ContactErrorMsg').text("Please fill the Schedular row values in Contact Info");
+                        $("#ContactErrorMsg").css({ "color": "Red" });
+                        $('#ContactErrorMsg').show();
+                    }
+                    return false;
+                }
+
+
+                if (previousObject.billing == '' || previousObject.billingEmail == '' || previousObject.billingPhone == '') {
+                    if (previousnum != -1) {
+                        $('#ContactErrorMsg').text("Please fill the Billing row values in Contact");
+                        $("#ContactErrorMsg").css({ "color": "Red" });
+                        $('#ContactErrorMsg').show();
+                    }
+                    return false;
+                }
+
+                $('#ContactErrorMsg').hide();
+
+                let ContactObject = new Object();
+
+                ContactObject.hospitalContactInfoID = 0;
+                ContactObject.hospitalId = $('#HospitalId').val(); //Comes from DB on initial page load
+                ContactObject.adminName = '';
+                ContactObject.adminEmail = '';
+                ContactObject.adminPhone = '';
+                ContactObject.schedular = '';
+                ContactObject.schedularEmail = '';
+                ContactObject.schedularPhone = '';
+                ContactObject.billing = '';
+                ContactObject.billingEmail = '';
+                ContactObject.billingPhone = '';
+                ContactObject.receptionistid = '';
+                ContactObject.staffid = '';
+
+                GlobalContactInfoArray.push(ContactObject);
+            }
+
+            let Admindynamicval = "<scr" + "ipt>" + "  $(document).ready(function(){$('#Adminphoneid" + contactinfonum.toString() + "').mask('(000) 000-0000');});" + "</scr" + "ipt>";
+            let Schedulardynamicval = "<scr" + "ipt>" + "  $(document).ready(function(){$('#Schedularphoneid" + contactinfonum.toString() + "').mask('(000) 000-0000');});" + "</scr" + "ipt>";
+            let Billingdynamicval = "<scr" + "ipt>" + "  $(document).ready(function(){$('#Billingphoneid" + contactinfonum.toString() + "').mask('(000) 000-0000');});" + "</scr" + "ipt>";
+            
+            var contactinfo = "<div class='card' id='carddiv" + contactinfonum.toString() + "'><div class='card-header' id=' " + cardhead + "'><h2 class='mb-0'>" +
+
+                "<button class='btn btn-link' type='button' data-toggle='collapse' data-target='#" + cardbody + "' aria-expanded='true' aria-controls='" + cardbody + "'>Contact Info #" + (contactinfonum + 1).toString() +
+                "</button></h2></div><div id=" + cardbody + " class='collapse show' aria-labelledby=" + cardhead + " data-parent='#accordionExample'><div class='card-body'> " +
+                "<div class='form-row'><div class='form-group col-md-4'><label for='Administratorid" + contactinfonum.toString() + "'  class='col-form-label'>Administrator Name</label>" +
+                "<input type='text' class='form-control' id='Administratorid" + contactinfonum.toString() + "' placeholder='Administrator Name'>" +
+                "</div><div class='form-group col-md-4'><label for='Adminemailid" + contactinfonum.toString() + "' class='col-form-label'>Administrator Email</label>" +
+                "<input type='text' class='form-control' id='Adminemailid" + contactinfonum.toString() + "' placeholder='Administrator Email'>" +
+                "</div><div class='form-group col-md-4'><label for='Adminphoneid" + contactinfonum.toString() + "' class='col-form-label'>Administrator Phone</label>" +
+                "<input type='text' class='form-control' id='Adminphoneid" + contactinfonum.toString() + "' placeholder='Administrator Phone'></div></div>" +
+                "<div class='form-row'><div class='form-group col-md-4'><label for='Schedularid" + contactinfonum.toString() + "' class='col-form-label'>Schedular Name</label>" +
+                "<input type='text' class='form-control' id='Schedularid" + contactinfonum.toString() + "' placeholder='Schedular Name'></div><div class='form-group col-md-4'>" +
+                "<label for='Schedularemailid" + contactinfonum.toString() + "' class='col-form-label'>Schedular Email</label><input type='text' class='form-control' id='Schedularemailid" + contactinfonum.toString() + "' placeholder='Schedular Email'>" +
+                "</div><div class='form-group col-md-4'><label for='Schedularphoneid' class='col-form-label'>Schedular Phone</label><input type='text' class='form-control' id='Schedularphoneid" + contactinfonum.toString() + "' placeholder='Schedular Phone'>" +
+                "</div></div><div class='form-row'><div class='form-group col-md-4'><label for='Billingid" + contactinfonum.toString() + "' class='col-form-label'>Billing</label>" +
+                "<input type='text' class='form-control' id='Billingid" + contactinfonum.toString() + "' placeholder='Billing Name'></div><div class='form-group col-md-4'>" +
+                "<label for='Billingemailid" + contactinfonum.toString() + "' class='col-form-label'>Billing Email</label><input type='text' class='form-control' id='Billingemailid" + contactinfonum.toString() + "' placeholder='Billing Email'>" +
+                "</div><div class='form-group col-md-4'><label for='Billingphoneid" + contactinfonum.toString() + "' class='col-form-label'>Billing Phone</label><input type='text' class='form-control' id='Billingphoneid" + contactinfonum.toString() + "' placeholder='Billing Phone'>" +
+                "</div></div><div class='form-row'><div class='form-group col-md-12'><label for='Receptionistid" + contactinfonum.toString() + "' class='col-form-label'>Receptionist Name: </label><input type='text' class='form-control' id='Receptionistid" + contactinfonum.toString() + "' placeholder='Receptionist Name'>" +
+                "</div></div><div class='form-row'><div class='form-group col-md-12'><label for='Staffid" + contactinfonum.toString() + "' class='col-form-label'>Add Staff: </label>" +
+                "<input type='text' class='form-control' id='Staffid" + contactinfonum.toString() + "' placeholder='Add Staff'>" +
+                "</div></div></div></div>" + Admindynamicval + Schedulardynamicval + Billingdynamicval +"</div>";
+
+
+            $('#accordionExample').append(contactinfo);
+
+            contactinfonum = contactinfonum + 1;
+
+        });
+
+         $('#RemoveInfoButton').on('click', function () {
+            $("#ContactErrorMsg").hide();
+            // debugger;
+            if (contactinfonum > 0) {
+                contactinfonum = contactinfonum - 1;
+                var dividselected = $('#carddiv' + contactinfonum.toString());
+
+                dividselected.remove();
+
+
+                GlobalContactInfoArray.pop(GlobalContactInfoArray.length - 1);
+
+                let lastdivvalue = GlobalContactInfoArray.length;
+            }
+        });
+
+         $('#SubmitHospital').on('click', function (e) {
+            //debugger;
+            e.preventDefault(); //do not post the form, we will do it manually.
+             
+            let HospitalId = $('#HospitalId').val();
+            let HospitalName = $('#HospitalName').val();
+            let Statename = $('#Statename').val();
+            let StateCode = $("#StateCode").val();           
+            let Suite = $('#Suite').val();
+            let City = $('#City').val();
+            let ZipCode = $('#ZipCode').val();
+            let Address = $('#Address').val();
+            let Phone = $('#Phone').val();
+            let Email = $('#Email').val();
+            let WebSite = $('#WebSite').val();
+           
+
+            var showError = false;
+            var ErrorMsg = '';
+
+            if (HospitalName == '')
+            {
+                ErrorMsg = "Facility Name is Missing";
+                showError = true;
+            }
+            if (Statename == '') {
+                ErrorMsg = ErrorMsg + "</br>" + "State name is Missing";
+                showError = true;
+            }
+            if (StateCode == '') {
+                ErrorMsg = ErrorMsg + "</br>" + "State Code is Missing";
+                showError = true;
+            }
+            //if (GroupId == '') {
+            //    ErrorMsg = ErrorMsg + "</br>" + "Group was not selected.";
+            //    showError = true;
+            //}
+            if (ZipCode == '') {
+                ErrorMsg = ErrorMsg + "</br>" + "Zip Code is Missing";
+                showError = true;
+            }
+            if (Address == '') {
+                ErrorMsg = ErrorMsg + "</br>" + "Address is Missing";
+                showError = true;
+            }
+            if (Phone == '') {
+                ErrorMsg = ErrorMsg + "</br>" + "Phone is Missing";
+                showError = true;
+            }
+            if (Email == '') {
+                ErrorMsg = ErrorMsg + "</br>" + "Email Address is Missing";
+                showError = true;
+            }
+
+            //Show Error Msg for Facility Info
+            if (showError) {
+                $("#ContactErrorMsg").html(ErrorMsg);
+                $("#ContactErrorMsg").css({ "color": "Red" });
+                $("#ContactErrorMsg").show();
+                return false;
+            }
+
+            var previousnum = contactinfonum - 1;
+            let previousObject = GlobalContactInfoArray[previousnum];
+
+            if (GlobalContactInfoArray.length > 0) {
+
+                $("#ContactErrorMsg").hide();
+                //previousObject.facilityId = 0;
+                previousObject.adminName = $('#Administratorid' + previousnum.toString()).val();
+                previousObject.adminEmail = $('#Adminemailid' + previousnum.toString()).val();
+                previousObject.adminPhone = $('#Adminphoneid' + previousnum.toString()).val();
+                previousObject.schedular = $('#Schedularid' + previousnum.toString()).val();
+                previousObject.schedularEmail = $('#Schedularemailid' + previousnum.toString()).val();
+                previousObject.schedularPhone = $('#Schedularphoneid' + previousnum.toString()).val();
+                previousObject.billing = $('#Billingid' + previousnum.toString()).val();
+                previousObject.billingEmail = $('#Billingemailid' + previousnum.toString()).val();
+                previousObject.billingPhone = $('#Billingphoneid' + previousnum.toString()).val();
+                previousObject.receptionistid = $('#Receptionistid' + previousnum.toString()).val();
+                previousObject.staffid = $('#Staffid' + previousnum.toString()).val();
+            } else {
+
+                $("#ContactErrorMsg").text("Please fill atleast one Contact Information");
+                $("#ContactErrorMsg").css({ "color": "Red" });
+                $("#ContactErrorMsg").show();
+
+                return false;
+            }
+
+            let ContactInfo = GlobalContactInfoArray;
+
+
+
+            // create an object which matches to Facility Class on server side, then post the object to server
+            // along with the data collected from the Form
+
+            var HospitalObject = {
+                hospitalId: HospitalId,
+                hospitalName: HospitalName,
+                statename: Statename,
+                stateCode: StateCode,
+                suite: Suite,
+                city: City,
+                address: Address,
+                zipCode: ZipCode,
+                phone: Phone,
+                email: Email,
+                webSite: WebSite,
+                contactInfos: ContactInfo,
+
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '/Hospitals/Edit?handler=FormData',
+                data: JSON.stringify(HospitalObject),
+                contentType: 'application/json, charset=utf-8',
+                dataType: "json",
+                "beforeSend": function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                success: function (data) {
+                    if (data.status) {
+                         //here we will clear the form
+                        $('#HospitalEditForm')[0].reset();
+
+                        $("#ContactErrorMsg").text("Data Successfully Saved");
+                        $("#ContactErrorMsg").css({ "color": "Green" });
+                        $("#ContactErrorMsg").show();
+
+                        $('#SubmitHospital').prop('disabled', true);
+
+                    }
+                    else {
+                        $("#ContactErrorMsg").text("Error Saving Form");
+                        $("#ContactErrorMsg").css({ "color": "Red" });
+                        $("#ContactErrorMsg").show();
+                    }
+
+                },
+                error: function (error) {
+                    $("#ContactErrorMsg").text("Error Occurred ");
+                    $("#ContactErrorMsg").css({ "color": "Red" });
+                    $("#ContactErrorMsg").show();
+
+                }
+            });
+
+        });
+
+         $("#Statename").autocomplete({
+                //minLength: 3,
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/Hospitals/Edit?handler=StateNamesList',
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("XSRF-TOKEN",
+                                $('input:hidden[name="__RequestVerificationToken"]').val());
+                        },
+                        type: "POST",
+                        dataType: "json",
+                        data: JSON.stringify({ stateName: $("#Statename").val() }),
+                        contentType: "application/json; charset=utf-8",
+                        success: function (data) {
+                            response(
+                                $.map(data, function (item) {
+
+                                    $("#StateCode").val(item.val);
+                                    return item;
+                                }))
+                        },
+                        failure: function (response) {
+                            alert(response);
+                        }
+
+                    })
+            },
+            //maxItems: 10,
+            select: function (e, i) {
+                    $('#searchButton').prop('disabled', false);
+                }
+            });
+
+         $("#City").autocomplete({
+            //minLength: 3,
+            source: function (request, response) {
+                $.ajax({
+                    url: '/Hospitals/Edit?handler=CityNamesList',
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                    type: "POST",
+                    dataType: "json",
+                    data: JSON.stringify({ stateCode: $("#StateCode").val(), cityName: $("#City").val() }),
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        response(
+                            $.map(data, function (item) {
+
+                               return item;
+                            }))
+                    },
+                    failure: function (response) {
+                        alert(response);
+                    }
+
+                })
+            },
+                select: function (e, i) {
+                $('#searchButton').prop('disabled', false);
+            }
+
+
+        });
+
+         $("#ZipCode").keypress(function (e) {
+
+            $("#ContactErrorMsg").hide();
+
+            //if the letter is not digit then display error and don't type anything
+            if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+                //display error message
+                $("#ContactErrorMsg").css({ "color": "Red" });
+                $("#ContactErrorMsg").html("Please enter digits only").show();
+                return false;
+            }
+        });
+
+         $("#ZipCode").autocomplete({
+            //minLength: 3,
+            source: function (request, response) {
+                $.ajax({
+                    url: '/Hospitals/Edit?handler=ZipCodeFromZipSearch',
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                    type: "POST",
+                    dataType: "json",
+                    data: JSON.stringify({ stateCode: $("#StateCode").val(), zipCode: $("#ZipCode").val() }),
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        response(
+                            $.map(data, function (item) {
+                                return item;
+                            }))
+                    },
+                    failure: function (response) {
+                        alert(response);
+                    }
+
+                })
+            },
+            //maxItems: 10,
+            select: function (e, i) {
+                //$('#searchButton').prop('disabled', false);
+            }
+        });
+
+         $('#ClearSubmitHospital').on('click', function (e) {
+
+            $('#HospitalEditForm')[0].reset();
+
+        });
+
+         $('#Phone').mask('(000) 000-0000');
+
+         $('#btnUpload').on('click', function () {
+
+            debugger;
+            var fileExtension = ['xls', 'xlsx'];
+            var filename = $('#fUpload').val();
+            if (filename.length == 0) {
+                alert("Please select a file.");
+                return false;
+            }
+            else {
+                var extension = filename.replace(/^.*\./, '');
+                if ($.inArray(extension, fileExtension) == -1) {
+                    alert("Please select an excel file.");
+                    return false;
+                }
+            }
+            var fdata = new FormData();
+            var fileUpload = $("#fUpload").get(0);
+            var files = fileUpload.files;
+            fdata.append(files[0].name, files[0]);
+
+            let hospitalID = $("#HospitalId").val();
+            fdata.append("HospitalId", hospitalID);
+
+            let zipcode = $('#ZipCode').val();
+            fdata.append("Zipcode", zipcode);
+
+            let stateCode = $('#StateCode').val();
+            fdata.append("StateCode", stateCode);
+
+            $.ajax({
+                type: "POST",
+                url: "/Hospitals/Edit?handler=Import",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                data: fdata,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response.zipCodeOrFacilityID == true) {
+                        if (response.headerStatus == true) {
+                            if (response.status == true) {
+                                $("#ContactErrorMsg").text("Upload into DB Successful");
+                                $("#ContactErrorMsg").css({ "color": "Green" });
+                                $("#ContactErrorMsg").show();
+                                $('#btnUpload').prop('disabled', true);
+
+                            } else {
+
+                                $("#ContactErrorMsg").text("Error occurred while uploading into DB.");
+                                $("#ContactErrorMsg").css({ "color": "Red" });
+                                $("#ContactErrorMsg").show();
+                            }
+
+                        } else {
+
+                            $("#ContactErrorMsg").text("Header missing from excel sheet");
+                            $("#ContactErrorMsg").css({ "color": "Red" });
+                            $("#ContactErrorMsg").show();
+                        }
+                    }
+                    else {
+                        $("#ContactErrorMsg").text("HospitalId or Zipcode missing.");
+                        $("#ContactErrorMsg").css({ "color": "Red" });
+                        $("#ContactErrorMsg").show();
+                    }
+                },
+                error: function (e) {
+                    $("#ContactErrorMsg").text("Error Occurred");
+                    $("#ContactErrorMsg").css({ "color": "Red" });
+                    $("#ContactErrorMsg").show();
+                }
+            });
+        });
+
+         $('#ViewCpt').on('click', function () {
+
+            let hospitalID = $("#HospitalId").val();
+
+            if (hospitalID != "") {
+                $("#ContactErrorMsg").hide();
+                dattableref = $('#myTable').DataTable({
+                    serverSide: true,
+                    "scrollY": 700,
+                    "pageLength": 25,
+                    "scrollX": true,
+                    destroy: true,
+                    ajax: {
+                        "url": "/Hospitals/Edit?handler=CptCodesForHospital",
+                        "data": { HospitalID: hospitalID },
+                        "dataType": "json",
+                        "beforeSend": function (xhr) {
+                            xhr.setRequestHeader("XSRF-TOKEN",
+                                $('input:hidden[name="__RequestVerificationToken"]').val());
+                        },
+                        "type": "POST"
+                    },
+                    columns: [
+                        {
+                            name: 'HospitalId',
+                            data: 'facilityId',
+                            title: "HospitalId",
+                            sortable: false,
+                            searchable: false
+                        },
+                        {
+                            name: 'CptCodes',
+                            data: "cptCodes",
+                            title: "CptCodes",
+                            sortable: false,
+                            searchable: true
+                        },
+
+                        {
+                            name: 'ZipCode',
+                            data: "zipCode",
+                            title: "ZipCode",
+                            sortable: false,
+                            searchable: false
+                        },
+
+                        {
+                            name: 'StateCode',
+                            data: "stateCode",
+                            title: "StateCode",
+                            sortable: false,
+                            searchable: false
+                        },
+                        {
+                            name: 'Active',
+                            data: "active",
+                            title: "Active",
+                            sortable: false,
+                            searchable: false
+                        },
+                        {
+                            name: 'FeePercentage',
+                            data: "feePercentage",
+                            title: "FeePercentage",
+                            sortable: false,
+                            searchable: false
+                        },
+
+                        {
+                            name: 'Fee',
+                            data: "fee",
+                            title: "Fee",
+                            sortable: false,
+                            searchable: false
+                        },
+                    ]
+                });
+            } else {
+                $("#ContactErrorMsg").text("Please choose the hospital from drop down");
+                $("#ContactErrorMsg").css({ "color": "Red" });
+                $("#ContactErrorMsg").show();
+            }
+        });
+
+               
+        });
+
+    </script>
+
+}
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+
+
+
+
